@@ -1,8 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse,Http404,HttpResponseRedirect
 import datetime as dt 
-from .models import Article
+from .models import Article,NewsLetterRecepients
 from .forms import NewsLetterForm
+from .email import send_welcome_email
+from django.contrib.auth.decorators import login_required
+
 
 
 # Create your views here.
@@ -14,11 +17,13 @@ def news_of_day(request):
     if request.method == 'POST':
         form = NewsLetterForm(request.POST)
         if form.is_valid():
-            name=from.cleaned_data['your_name']
-            email = from.cleaned_data['email']
+            name=form.cleaned_data['your_name']
+            email = form.cleaned_data['email']
             recepient = NewsLetterRecepients(name=name,email=email)
             recepient.save()
-            HttpResponseRedirect
+            
+            send_welcome_email(name,email)
+            HttpResponseRedirect('news_today')
             print('valid')
     else:
         form = NewsLetterForm()
@@ -56,7 +61,7 @@ def search_results(request):
         message = "You haven't searched for any term"
         return render(request, 'all-news/search.html',{"message":message})
     
-    
+@login_required(login_url="/accounts/login/")  
 def article(request,article_id):
     try:
         article = Article.objects.get(id=article_id)

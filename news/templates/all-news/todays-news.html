@@ -24,12 +24,17 @@
     {% endfor %}
 
 </div>
-<div class="container-fluid">
+<div class="container">
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4"></div><div class="col-md-4">
     <form action='{% url "newsToday"%}' method="post">
         {%csrf_token%}
         {%bootstrap_form letterForm layout='inline'%}
         <input type="submit" value="subcribe">
     </form>
+</div>
+</div>
 </div>
 
 <p>{{message}}</p>
